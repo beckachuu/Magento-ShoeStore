@@ -65,6 +65,9 @@ $outofstockImagewidth = $outofstock_helper->getConfigValue('outofstock_product/o
                         $position = ' style="left:' . $productImage->getWidth() . 'px;'
                                 . 'top:' . $productImage->getHeight() . 'px;"';
                     }
+                    else {
+                        $pos = '';
+                    }
                     ?>
                     <?php // Product Image ?>
                     <?php if ($viewMode == 'grid') { ?>
@@ -240,8 +243,8 @@ $outofstockImagewidth = $outofstock_helper->getConfigValue('outofstock_product/o
                      * Check if "sale" label is enabled and if product has special price with from & to special price
                      */
                     if ($isSaleLabel) {
-                        $special_price = number_format($_product->getSpecialPrice(), 2);
-                        $regular_price = number_format($_product->getPrice(), 2);
+                        $special_price = $_product->getSpecialPrice() ? number_format($_product->getSpecialPrice(), 2) : '';
+                        $regular_price = $_product->getPrice() ? number_format($_product->getPrice(), 2) : '';
                         if (isset($special_price) && $special_price > 0) {
                             if ($special_price < $regular_price) {
                                 $fromSpecialDate = $_product->getSpecialFromDate();
