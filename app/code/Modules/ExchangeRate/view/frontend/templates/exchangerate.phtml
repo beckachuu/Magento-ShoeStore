@@ -1,0 +1,45 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<?php
+$arrContextOptions=array(
+    "ssl"=>array(
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+    ),
+);
+
+$url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx?b=1";
+$xml = file_get_contents($url,false, stream_context_create($arrContextOptions));
+$new = simplexml_load_string($xml);
+$con = json_encode($new);
+$data = json_decode($con, true);
+
+?>
+<h3 class="text-center">Vietcombank Currency Conversion Table <?= $data['DateTime'] ?></h3>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th scope="col"><h5>#</h5></th>
+        <th scope="col"><h5>Code</h5></th>
+        <th scope="col"><h5>Symbol</h5></th>
+        <th scope="col"><h5>Name</h5></th>
+        <th scope="col"><h5>Purchase Price</h5></th>
+        <th scope="col"><h5>Transfer Price</h5></th>
+        <th scope="col"><h5>Selling Price</h5></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($data['Exrate'] as $k => $currency): ?>
+        <tr>
+            <th scope="row"><h5><?= $k+1 ?></h5></th>
+            <td><h5><?= $currency['@attributes']['CurrencyCode'] ?></h5></td>
+            <td style="font-size: 1.25rem;">
+                <img src="https://flagcdn.com/48x36/<?= strtolower(substr($currency['@attributes']['CurrencyCode'], 0, -1)) ?>.png">
+            </td>
+            <td><h5><?= $currency['@attributes']['CurrencyName'] ?></h5></td>
+            <td><h5><?= $currency['@attributes']['Buy'] ?></h5></td>
+            <td><h5><?= $currency['@attributes']['Transfer'] ?></h5></td>
+            <td><h5><?= $currency['@attributes']['Sell'] ?></h5></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
