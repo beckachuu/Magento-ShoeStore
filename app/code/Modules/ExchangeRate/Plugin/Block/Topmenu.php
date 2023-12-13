@@ -43,9 +43,9 @@ class Topmenu {
         }
         $root = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $port;
 
-        $url = $root . '/exchangerate';
+        $url = $root . '/exchangerate/page/index';
         return [
-            'name' => __('Exchange Rate'),
+            'name' => 'Exchange Rate',
             'id' => 'modules-exchangerate-navitem',
             'url' => $url,
             'has_active' => false,
