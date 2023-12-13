@@ -1,0 +1,131 @@
+<?php
+$ch = curl_init();
+
+$url = 'https://api.openweathermap.org/data/2.5/forecast?q=Hanoi,vn&units=metric&APPID=';
+$api_key = '8ab3e6d73bd00413bc0a7cecc0ac675a';
+$url = $url . $api_key;
+
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_URL, $url);
+$result = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($result, true);
+
+function getIconUrl($iconName)
+{
+    return 'https://openweathermap.org/themes/openweathermap/assets/vendor/owm/img/widgets/' . $iconName . '.png';
+}
+
+function isWithinThreeHours($datetime)
+{
+    $now = new DateTime();
+    $datetime = new DateTime($datetime);
+    $interval = $now->diff($datetime);
+    return $interval->h <= 3 || $datetime >= $now;
+}
+?>
+
+<style>
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #f5f5f5;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 15px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+    .highlight {
+        font-weight: bold;
+    }
+</style>
+
+<h2>Most Recent Future Weather</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Temperature</th>
+            <th>Feels Like</th>
+            <th>Min Temperature</th>
+            <th>Max Temperature</th>
+            <th>Humidity</th>
+            <th>Weather</th>
+            <th>Cloudiness</th>
+            <th>Wind Speed</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isWithinThreeHours($data['list'][0]['dt_txt'])): ?>
+            <tr class="highlight">
+                <td><?= $data['list'][0]['dt_txt'] ?></td>
+                <td><?= $data['list'][0]['main']['temp'] ?>°C</td>
+                <td><?= $data['list'][0]['main']['feels_like'] ?>°C</td>
+                <td><?= $data['list'][0]['main']['temp_min'] ?>°C</td>
+                <td><?= $data['list'][0]['main']['temp_max'] ?>°C</td>
+                <td><?= $data['list'][0]['main']['humidity'] ?>%</td>
+                <td><img src="<?= getIconUrl($data['list'][0]['weather'][0]['icon']) ?>" alt="<?= $data['list'][0]['weather'][0]['description'] ?>"><?= $data['list'][0]['weather'][0]['description'] ?></td>
+                <td><?= $data['list'][0]['clouds']['all'] ?>%</td>
+                <td><?= $data['list'][0]['wind']['speed'] ?> m/s</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+
+<h2>Future Weather Forecast</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Temperature</th>
+            <th>Feels Like</th>
+            <th>Min Temperature</th>
+            <th>Max Temperature</th>
+            <th>Humidity</th>
+            <th>Weather</th>
+            <th>Cloudiness</th>
+            <th>Wind Speed</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach (array_slice($data['list'], 1) as $item): ?>
+            <?php if (isWithinThreeHours($item['dt_txt'])): ?>
+                <tr>
+                    <td><?= $item['dt_txt'] ?></td>
+                    <td><?= $item['main']['temp'] ?>°C</td>
+                    <td><?= $item['main']['feels_like'] ?>°C</td>
+                    <td><?= $item['main']['temp_min'] ?>°C</td>
+                    <td><?= $item['main']['temp_max'] ?>°C</td>
+                    <td><?= $item['main']['humidity'] ?>%</td>
+                    <td><img src="<?= getIconUrl($item['weather'][0]['icon']) ?>" alt="<?= $item['weather'][0]['description'] ?>"><?= $item['weather'][0]['description'] ?></td>
+                    <td><?= $item['clouds']['all'] ?>%</td>
+                    <td><?= $item['wind']['speed'] ?> m/s</td>
+                </tr>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </tbody>
+</table>
