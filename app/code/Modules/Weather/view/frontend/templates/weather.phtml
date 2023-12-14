@@ -18,13 +18,29 @@ function getIconUrl($iconName)
     return 'https://openweathermap.org/themes/openweathermap/assets/vendor/owm/img/widgets/' . $iconName . '.png';
 }
 
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 function isWithinThreeHours($datetime)
 {
     $now = new DateTime();
     $datetime = new DateTime($datetime);
     $interval = $now->diff($datetime);
-    return $interval->h <= 3 || $datetime >= $now;
+
+    // Calculate total difference in hours
+    $hoursDifference = $interval->h;
+    $hoursDifference += $interval->days * 24;
+
+    // Check if datetime is within 3 hours in the past / in the future
+    return $hoursDifference <= 3 || $datetime > $now;
 }
+
+function formatDateTime($datetimeString) {
+    $datetime = new DateTime($datetimeString);
+    return $datetime->format('H:i | d - M');
+}
+
+
+
 ?>
 
 <style>
@@ -45,10 +61,7 @@ function isWithinThreeHours($datetime)
     tr:nth-child(even) {
         background-color: #FFF5EE;
     }
-    /* tr:hover {
-        color: #FFF5EE; 
-        background-color: #FBCEB1;
-    } */
+
 
     .highlight-header th {
         color: #ffffff; 
@@ -59,62 +72,80 @@ function isWithinThreeHours($datetime)
     }
 
     th, td {
-        border: 1px solid #ddd;
-        padding: 15px;
+        border-top: 1px solid #ddd;
         text-align: center;
         vertical-align: middle;
         font-size: 1.25em;
-        line-height: 1.5;
+        line-height: 1.5em;
     }
     th {
+        line-height: 1.5em;
+        text-align: center;
         background-color: #FFD580;
+    }
+
+    tbody tr:hover {
+        color: #ffffff; 
+        background-color: #f2703e;
+        font-weight: bold;
     }
 </style>
 
-<h2 class="title">Current Weather</h2>
-<table>
-    <thead>
-        <tr class="highlight-header">
-            <th>Date and Time</th>
-            <th>Temperature</th>
-            <th>Feels Like</th>
-            <th>Temperature</th>
-            <th>Humidity</th>
-            <th>Weather</th>
-            <th>Cloudiness</th>
-            <th>Wind Speed</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if (isWithinThreeHours($data['list'][0]['dt_txt'])): ?>
+
+<?php
+    $firstItem = null;
+    foreach ($data['list'] as $item) {
+        if (isWithinThreeHours($item['dt_txt'])) {
+            $firstItem = $item;
+            break;
+        }
+    }
+?>
+
+<?php if ($firstItem): ?>
+
+    <h2 class="title">Current Weather</h2>
+    <table>
+        <thead>
+            <tr class="highlight-header">
+                <th>Datetime</th>
+                <th>Temperature</th>
+                <th>Feels Like</th>
+                <th>Humidity</th>
+                <th>Weather</th>
+                <th>Cloudiness</th>
+                <th>Wind Speed</th>
+            </tr>
+        </thead>
+
+        <tbody>
             <tr class="highlight-text">
-                <td><?= $data['list'][0]['dt_txt'] ?></td>
-                <td><?= $data['list'][0]['main']['temp'] ?>°C</td>
-                <td><?= $data['list'][0]['main']['feels_like'] ?>°C</td>
-                <td><?= $data['list'][0]['main']['temp_min'] ?> - <?= $data['list'][0]['main']['temp_max'] ?> °C</td>
-                <td><?= $data['list'][0]['main']['humidity'] ?>%</td>
+                <td><?= formatDateTime($firstItem['dt_txt']) ?></td>
+                <td><?= intval($firstItem['main']['temp']) ?>°C</td>
+                <td><?= intval($firstItem['main']['feels_like']) ?>°C</td>
+                <td><?= $firstItem['main']['humidity'] ?>%</td>
                 
                 <td>
-                    <img src="<?= getIconUrl($data['list'][0]['weather'][0]['icon']) ?>" alt="<?= $data['list'][0]['weather'][0]['description'] ?>" width="40">
-                    <?= $data['list'][0]['weather'][0]['description'] ?>
+                    <img src="<?= getIconUrl($firstItem['weather'][0]['icon']) ?>" alt="<?= $firstItem['weather'][0]['description'] ?>" width="40">
+                    <?= $firstItem['weather'][0]['description'] ?>
                 </td>
 
-                <td><?= $data['list'][0]['clouds']['all'] ?>%</td>
-                <td><?= $data['list'][0]['wind']['speed'] ?> m/s</td>
+                <td><?= $firstItem['clouds']['all'] ?>%</td>
+                <td><?= $firstItem['wind']['speed'] ?> m/s</td>
             </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+
+<?php endif; ?>
 
 
 <h2 class="text-center title">Upcoming Weather</h2>
 <table>
     <thead>
         <tr>
-            <th>Date and Time</th>
+            <th>Datetime</th>
             <th>Temperature</th>
             <th>Feels Like</th>
-            <th>Temperature</th>
             <th>Humidity</th>
             <th>Weather</th>
             <th>Cloudiness</th>
@@ -123,12 +154,11 @@ function isWithinThreeHours($datetime)
     </thead>
     <tbody>
         <?php foreach (array_slice($data['list'], 1) as $item): ?>
-            <?php if (isWithinThreeHours($item['dt_txt'])): ?>
+            <?php if ($item !== $firstItem && isWithinThreeHours($item['dt_txt'])): ?>
                 <tr>
-                    <td><?= $item['dt_txt'] ?></td>
-                    <td><?= $item['main']['temp'] ?>°C</td>
-                    <td><?= $item['main']['feels_like'] ?>°C</td>
-                    <td><?= $data['list'][0]['main']['temp_min'] ?> - <?= $data['list'][0]['main']['temp_max'] ?> °C</td>
+                    <td><?= formatDateTime($item['dt_txt']) ?></td>
+                    <td><?= intval($item['main']['temp']) ?> °C</td>
+                    <td><?= intval($item['main']['feels_like']) ?>°C</td>
                     <td><?= $item['main']['humidity'] ?>%</td>
                     
                     <td>

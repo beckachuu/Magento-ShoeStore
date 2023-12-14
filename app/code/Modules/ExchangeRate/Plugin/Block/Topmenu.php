@@ -46,10 +46,10 @@ class Topmenu {
         $url = $root . '/exchangerate/page/index';
         return [
             'name' => 'Exchange Rate',
-            'id' => 'modules-exchangerate-navitem',
+            'id' => 'exchangerate',
             'url' => $url,
             'has_active' => false,
-            'is_active' => false // (expression to determine if menu item is selected or not)
+            'is_active' => false
         ];
     }
 }

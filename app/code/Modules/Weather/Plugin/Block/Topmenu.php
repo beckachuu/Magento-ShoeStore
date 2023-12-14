@@ -49,7 +49,7 @@ class Topmenu {
             'id' => 'weather',
             'url' => $url,
             'has_active' => false,
-            'is_active' => false // (expression to determine if menu item is selected or not)
+            'is_active' => false
         ];
     }
 }

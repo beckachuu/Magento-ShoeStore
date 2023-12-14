@@ -16,22 +16,36 @@ $data = json_decode($con, true);
 
 
 <style>
-    .table td, .table th {
-        padding: .75rem;
-        vertical-align: middle;
-        border-top: 1px solid #dee2e6;
-        font-size: 1.75rem;
-    }
-    .table tbody tr:nth-of-type(odd) {
-        background-color: rgba(0,0,0,.05);
-    }
     .title {
         font-size: 2.75rem;
         color: #ff6347; 
         margin-bottom: 2.75rem;
         font-weight: bold;
+        font-family: Verdana, sans-serif;
         /* text-shadow: 2px 2px 4px #000000;  */
     }
+
+    td, th {
+        padding: .75rem;
+        vertical-align: middle;
+        border-top: 1px solid #dee2e6;
+        font-size: 1.75rem;
+        font-family: Verdana, sans-serif;
+    }
+    tr:nth-of-type(odd) {
+        background-color: #FFF5EE;
+    }
+    th {
+        background-color: #CC5500;
+        color: #ffffff; 
+    }
+
+    tbody tr:hover {
+        color: #ffffff; 
+        background-color: #f2703e;
+        font-weight: bold;
+    }
+
 </style>
 
 <h3 class="text-center title">Vietcombank Currency Conversion Table <?= $data['DateTime'] ?></h3>
