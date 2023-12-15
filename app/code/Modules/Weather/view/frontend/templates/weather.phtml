@@ -39,8 +39,6 @@ function formatDateTime($datetimeString) {
     return $datetime->format('H:i | d - M');
 }
 
-
-
 ?>
 
 <style>
@@ -72,9 +70,9 @@ function formatDateTime($datetimeString) {
     }
 
     th, td {
-        border-top: 1px solid #ddd;
-        text-align: center;
-        vertical-align: middle;
+        border-bottom: 1px solid #ddd;
+        text-align: center !important;
+        vertical-align: middle !important;
         font-size: 1.25em;
         line-height: 1.5em;
     }
@@ -87,8 +85,17 @@ function formatDateTime($datetimeString) {
     tbody tr:hover {
         color: #ffffff; 
         background-color: #f2703e;
-        font-weight: bold;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        /* transition: background-color 0.3s ease; */
     }
+
+    .weather-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
 </style>
 
 
@@ -126,8 +133,10 @@ function formatDateTime($datetimeString) {
                 <td><?= $firstItem['main']['humidity'] ?>%</td>
                 
                 <td>
-                    <img src="<?= getIconUrl($firstItem['weather'][0]['icon']) ?>" alt="<?= $firstItem['weather'][0]['description'] ?>" width="40">
-                    <?= $firstItem['weather'][0]['description'] ?>
+                    <div class="weather-column">
+                        <img src="<?= getIconUrl($firstItem['weather'][0]['icon']) ?>" alt="<?= $firstItem['weather'][0]['description'] ?>" width="40">
+                        <?= $firstItem['weather'][0]['description'] ?>
+                    </div>
                 </td>
 
                 <td><?= $firstItem['clouds']['all'] ?>%</td>
@@ -162,8 +171,10 @@ function formatDateTime($datetimeString) {
                     <td><?= $item['main']['humidity'] ?>%</td>
                     
                     <td>
-                        <img src="<?= getIconUrl($item['weather'][0]['icon']) ?>" alt="<?= $item['weather'][0]['description'] ?>" width="40">
-                        <?= $item['weather'][0]['description'] ?>
+                        <div class="weather-column">
+                            <img src="<?= getIconUrl($item['weather'][0]['icon']) ?>" alt="<?= $item['weather'][0]['description'] ?>" width="40">
+                            <?= $item['weather'][0]['description'] ?>
+                        </div>
                     </td>
 
                     <td><?= $item['clouds']['all'] ?>%</td>
