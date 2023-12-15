@@ -4,7 +4,7 @@ namespace FutureActivities\Api\Model;
 use FutureActivities\Api\Api\ProductInterface;
 use FutureActivities\Api\Model\Product\BasicFactory;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
-
+#[AllowDynamicProperties]
 class Product implements ProductInterface
 {
     protected $productCollectionFactory;
